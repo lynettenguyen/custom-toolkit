@@ -189,10 +189,14 @@ var MyToolkit = (function() {
         * @param {int} number - the amount of radio buttons 
      */
     var RadioButton = function(number){
+        SVG.on(document, "click", function(e){
+            console.log("Just pressed: " + e.y);
+            console.log(e);
+        })
         var radiobuttonGroup = draw.group();
         var x_cord = 0;
         var y_cord = 0;
-        var buttons = [];
+        var buttons = new SVG.List();
         var selectedIndex = null;
         var stateTracker = false;
         var clickEvent = null;
@@ -205,44 +209,32 @@ var MyToolkit = (function() {
         for (i = 0; i < number; ++i){
             var option = radiobuttonGroup.ellipse(25,25);
             var select = radiobuttonGroup.ellipse(15, 15).fill({color: '#a9c5a0'});
+            
             option.fill('#a9c5a0');
             if (i == 0){
-                console.log(x_cord + " "+ y_cord);
-                option.move(x_cord, y_cord);
-                console.log(x_cord + " "+ y_cord);
-                select.move(x_cord+5, y_cord+5);
+                select.move(5, 5);
             }
             else{
-                option.move(x_cord, y_cord +(i*25) + (i*8));
-                select.move(x_cord+5, y_cord+(i*25) + (i*8) + 5);
+
+                option.move(0, (i*25) + (i*8));
+                select.move(5, +(i*25) + (i*8) + 5);
             }
-            select.mouseover(function(event){
-                if (stateTracker){
-                    console.log("STATE: IDLE");
-                }
-                
-            });
+            buttons.push(select);
+        }
 
-            select.mouseup(function(event){
-                if (stateTracker){
-                    console.log("STATE: EXECUTED");
-                }
-            })
-
-            select.click(function(event){
+        buttons.each(function(item){
+            item.click(function(event){
                 if (stateTracker){
                     console.log("STATE: PRESSED");
                 }
-            
                 if(selectedIndex != null){
                     var currentIndex = 0;
                     var i;
-                    for (i = 0; i < number; i++){
-                        if (event.y > y_cord + ((i+1)*25) + ((i+1)*8) +5){
+                    for (i = 1; i < number; i++){
+                        if (event.offsetY > (y_cord + (i*25) + (i*8) + 5)){
                             currentIndex++;
                         }
                     }
-
                     if (currentIndex == selectedIndex){
                         this.fill({color: '#a9c5a0'});
                         selectedIndex = null;
@@ -252,11 +244,11 @@ var MyToolkit = (function() {
                     }
                     
                     else{
-                        buttons[selectedIndex-1].fill({color: '#a9c5a0'});
+                        buttons[selectedIndex].fill({color: '#a9c5a0'});
+                        buttons[currentIndex].fill("white");
                         if (stateTracker){
                             console.log("STATE: UNSELECT");
                         }
-                        buttons[currentIndex-1].fill("white");
                         if (stateTracker){
                             console.log("STATE: SELECT");
                         }
@@ -266,10 +258,8 @@ var MyToolkit = (function() {
                 else {
                     var currentIndex = 0;
                     var i;
-                    for (i = 0; i < number; i++){
-                        if (event.y > (y_cord + ((i+1)*25) + ((i+1)*8) + 5)){
-                            console.log("button is selected for the first time")
-                            console.log(y_cord + ((i+1)*25) + ((i+1)*8) + 5)
+                    for (i = 1; i < number; i++){
+                        if (event.offsetY > (y_cord + (i*25) + (i*8) + 5)){
                             currentIndex++;
                         }
                     }
@@ -284,9 +274,7 @@ var MyToolkit = (function() {
                     clickEvent(event);
                 }
             })
-            buttons.push(select);
-
-        }
+        })
 
         return {
             /**
@@ -337,7 +325,7 @@ var MyToolkit = (function() {
             */
             selected: function(){
                 if (selectedIndex != null){
-                    return selectedIndex-1;
+                    return selectedIndex;
                 }
                 else{
                     return null;
