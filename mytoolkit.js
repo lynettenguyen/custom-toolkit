@@ -649,9 +649,9 @@ var MyToolkit = (function() {
         var stateTracker = false;
 
         var update = function(){
-            var change = progressValue/100
+            var change = progressValue/width
             console.log(change)
-            progress.attr({width: width*change});
+            progress.animate({duration: 2000}).attr({width: width*change});
         }
 
         ProgressBarGroup.click(function(event){
@@ -703,8 +703,8 @@ var MyToolkit = (function() {
             */
             incrementValue: function(value){
                 progressValue += value;
-                if (progressValue > 100){
-                    progressValue = 97.5;
+                if (progressValue > width){
+                    progressValue = width;
                 }
                 update();
                 if (stateTracker){

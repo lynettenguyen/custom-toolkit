@@ -66,5 +66,8 @@ progressBar.onclick(function(e){
 	console.log("The value of the progress bar is: " + progressBar.getValue() + "%");
 })
 
+btn.onclick(function(e){
+	progressBar.incrementValue(50);
+})
 var counter = new MyToolkit.Counter();
 counter.move(300, 180);
