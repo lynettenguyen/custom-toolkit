@@ -19,18 +19,30 @@ var MyToolkit = (function() {
 
         rect.mouseover(function(){
             this.fill({ color: '#c6dec6'})
+            if (stateTracker){
+                console.log("STATE: IDLE")
+            }
         })
         rect.mouseout(function(){
             this.fill({ color: '#a9c5a0'})
+            if (stateTracker){
+                console.log("STATE: IDLE")
+            }
         })
         rect.mouseup(function(){
             this.fill({ color: '#a9c5a0'})
+            if (stateTracker){
+                console.log("STATE: EXECUTE")
+            }
         })
         rect.click(function(event){
             console.log("Button is clicked")
             this.fill({ color: '#758173'})
             if(clickEvent != null)
                 clickEvent(event)
+            if (stateTracker){
+                console.log("STATE: PRESSED")
+            }
         })
         return {
             /**
@@ -59,10 +71,20 @@ var MyToolkit = (function() {
             */
             label: function(textLabel){
                 var length = textLabel.length;
-                var offset = 50 - (Math.floor(length / 2) * 7);
+                var offset = 50 - (Math.floor(length / 2) * 6);
                 text = buttonGroup.text(textLabel);
                 text.move(50-offset, 25);
                 text.fill({color: "white"})
+            },
+
+            /**
+             * Monitor state changes
+             * @method
+            */
+            monitor: function(){
+                console.log("monitor")
+                stateTracker = !stateTracker;
+                console.log("inside funct")
             }
 
         }
@@ -78,24 +100,40 @@ var MyToolkit = (function() {
         var text = checkboxGroup.text("hey");
         text.move(30,4);
         var clicked = false; 
-        var check = checkboxGroup.text("x").fill({color: "white"}).size(8);
+        var check = checkboxGroup.text("x").fill({color: "white"});
+        check.attr({fontSize: 16})
+        check.move(8, 0.5)
 
         var clickEvent = null;
+        var stateTracker = false;
 
         checkboxGroup.click(function(event){
+            if (stateTracker){
+                console.log("STATE: PRESSED")
+            }
             if (!clicked){
                 check.fill({color:"black"});
                 clicked = true;
+
+                if (stateTracker){
+                    console.log("STATE: CLICKED")
+                }
             }
             else{
                 check.fill({color:"white"});
                 clicked = false;
+                if (stateTracker){
+                    console.log("STATE: UNCLICKED")
+                }
             }
 
             if (clickEvent != null){
                 clickEvent(event)
             }
+
+        
         })
+
 
         return {
             /**
@@ -133,6 +171,13 @@ var MyToolkit = (function() {
             */
             checkState: function(){
                 return clicked;
+            },
+            /**
+             * Monitor state changes
+             * @method
+            */
+             monitor: function(){
+                stateTracker = !stateTracker;
             }
             
         }
@@ -149,7 +194,7 @@ var MyToolkit = (function() {
         var y_cord = 0;
         var buttons = [];
         var selectedIndex = null;
-        var monitorState = false;
+        var stateTracker = false;
         var clickEvent = null;
 
         if (number <2 ){
@@ -161,36 +206,31 @@ var MyToolkit = (function() {
             var option = radiobuttonGroup.ellipse(25,25);
             var select = radiobuttonGroup.ellipse(15, 15).fill({color: '#a9c5a0'});
             option.fill('#a9c5a0');
-            console.log("this is i: " + i)
             if (i == 0){
-                console.log("inside i ==0 loop")
                 console.log(x_cord + " "+ y_cord);
                 option.move(x_cord, y_cord);
                 console.log(x_cord + " "+ y_cord);
                 select.move(x_cord+5, y_cord+5);
             }
             else{
-                console.log("inside else loop")
                 option.move(x_cord, y_cord +(i*25) + (i*8));
                 select.move(x_cord+5, y_cord+(i*25) + (i*8) + 5);
             }
             select.mouseover(function(event){
-                if (monitorState){
-                    console.log(event);
+                if (stateTracker){
                     console.log("STATE: IDLE");
                 }
                 
             });
 
             select.mouseup(function(event){
-                if (monitorState){
-                    console.log(event);
+                if (stateTracker){
                     console.log("STATE: EXECUTED");
                 }
             })
 
             select.click(function(event){
-                if (monitorState){
+                if (stateTracker){
                     console.log("STATE: PRESSED");
                 }
             
@@ -206,11 +246,20 @@ var MyToolkit = (function() {
                     if (currentIndex == selectedIndex){
                         this.fill({color: '#a9c5a0'});
                         selectedIndex = null;
+                        if (stateTracker){
+                            console.log("STATE: UNSELECT");
+                        }
                     }
                     
                     else{
                         buttons[selectedIndex-1].fill({color: '#a9c5a0'});
+                        if (stateTracker){
+                            console.log("STATE: UNSELECT");
+                        }
                         buttons[currentIndex-1].fill("white");
+                        if (stateTracker){
+                            console.log("STATE: SELECT");
+                        }
                         selectedIndex = currentIndex;
                     }
                 }
@@ -226,6 +275,9 @@ var MyToolkit = (function() {
                     }
                     this.fill({ color: 'white'})
                     selectedIndex = currentIndex;
+                    if (stateTracker){
+                        console.log("STATE: SELECT");
+                    }
                 }
 
                 if (clickEvent != null){
@@ -262,7 +314,7 @@ var MyToolkit = (function() {
                     text.move(x_cord+32, y_cord +2);
                 }
                 else {
-                    text.move(x_cord+32, y_cord +(index*25)+10);
+                    text.move(x_cord+32, y_cord +(index*25)+(index*10));
                 }
             },
             
@@ -290,6 +342,14 @@ var MyToolkit = (function() {
                 else{
                     return null;
                 } 
+            },
+
+            /**
+             * Monitors state changes
+             * @method
+            */
+            monitor: function(){
+                stateTracker = !stateTracker;
             }
 
 
@@ -313,20 +373,35 @@ var MyToolkit = (function() {
         
         var clicked = false;
         var clickEvent = null;
+        var stateTracker = false;
 
         box.mouseover(function(){
             caret.stroke({width: 1, color: "black"})
         })
         box.mouseout(function(){
             caret.stroke({width: 1, color: "white"})
+            if (stateTracker){
+                console.log("STATE: IDLE")
+            }
         })
 
+        box.mouseup(function(){
+            if (clicked && stateTracker){
+                console.log("STATE: FOCUSED")
+            }
+            else if (!clicked && stateTracker){
+                console.log("STATE: UNFOCUSED")
+            }
+        })
         box.click(function(event){
             if (clicked){
                 clicked = false;
             }
             else{
                 clicked = true;
+                if (stateTracker){
+                    console.log("STATUS: PRESSED")
+                }
             }
             if (clickEvent != null){
                 clickEvent(event);
@@ -338,6 +413,10 @@ var MyToolkit = (function() {
             if ((e.y < box_y || e.y > box_y +30) && (e.x < box_x || e.x > box_x +200) && clicked){
                 console.log("document is clicked after box is clicked");
                 clicked = false;
+
+                if (stateTracker){
+                    console.log("STATUS: UNFOCUSED")
+                }
             }
         })
 
@@ -353,6 +432,10 @@ var MyToolkit = (function() {
                 textLabel.text(text);
                 var caretSpace = 7 + (text.length*6);
                 caret.move(caretSpace +box_x, box_y+ 2.5, caretSpace+box_x, box_y+25);
+
+                if (stateTracker){
+                    console.log("STATUS: ACTIVATED")
+                }
             }
 
             if (clickEvent != null){
@@ -390,6 +473,14 @@ var MyToolkit = (function() {
             */
             onkeydown: function(eventHandler){
                 clickEvent = eventHandler
+            },
+
+            /**
+             * Monitors state changes
+             * @method
+            */
+             monitor: function(){
+                stateTracker = !stateTracker;
             }
         }
 
@@ -418,9 +509,13 @@ var MyToolkit = (function() {
         var start_scroll;
         var end_scroll;
         var clickEvent = null;
+        var stateTracker = false;
 
         ScrollBarGroup.mouseout(function(){
             scroll.fill("white");
+            if (stateTracker){
+                console.log("STATUS: IDLE")
+            }
         })
 
         ScrollBarGroup.mouseover(function(){
@@ -430,6 +525,9 @@ var MyToolkit = (function() {
         SVG.on(scroll, "mousedown", function(event){
             start_scroll = event.y;
             scroll.fill("#758173");
+            if (stateTracker){
+                console.log("STATUS: PRESSED")
+            }
         })
 
         SVG.on(ScrollBarGroup, "mouseup", function(event){
@@ -467,6 +565,9 @@ var MyToolkit = (function() {
 
             if (clickEvent != null){
                 clickEvent(event);
+            }
+            if (stateTracker){
+                console.log("STATUS: MOVED")
             }
         })
 
@@ -519,6 +620,13 @@ var MyToolkit = (function() {
                 bar.attr({height: newHeight});
                 scroll.attr({height: newHeight/5});
                 barHeight = newHeight;
+            },
+            /**
+             * Monitors state changes
+             * @method
+            */
+             monitor: function(){
+                stateTracker = !stateTracker;
             }
         }
     }
@@ -530,9 +638,8 @@ var MyToolkit = (function() {
      */
     var ProgressBar = function(width){
         var ProgressBarGroup = draw.group();
-        var bar = ProgressBarGroup.rect(width, 10).radius(5).fill('#a9c5a0')
-        var progress = ProgressBarGroup.rect(0, 8).radius(3).fill("white");
-        progress.move(2.5, 2.5);
+        var bar = ProgressBarGroup.rect(width, 12).radius(5).fill('#a9c5a0').stroke({width: 1, color: "#758173"})
+        var progress = ProgressBarGroup.rect(0, 12).radius(5).fill("#758173");
         
 
         var progressValue = 0;
@@ -542,24 +649,15 @@ var MyToolkit = (function() {
         var update = function(){
             var change = progressValue/100
             console.log(change)
-            progress.attr({width: width*change, height: 5});
+            progress.attr({width: width*change});
         }
 
         ProgressBarGroup.click(function(event){
             if (clickEvent != null){
                 clickEvent(event)
             }
-
-            progress.fill("#758173")
         })
 
-        ProgressBarGroup.mouseout(function(){
-            progress.fill("white");
-        })
-
-        ProgressBarGroup.mouseover(function(){
-            progress.fill("#c6dec6");
-        })
 
         return {
             /**
