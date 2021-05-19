@@ -646,6 +646,8 @@ var MyToolkit = (function() {
         var width = width;
         var clickEvent = null;
 
+        var stateTracker = false;
+
         var update = function(){
             var change = progressValue/100
             console.log(change)
@@ -676,9 +678,14 @@ var MyToolkit = (function() {
              * @param {int} value - the value to set the bar to (0-100)
             */
             setValue: function(value){
+                if (stateTracker){
+                    console.log("STATE: INCREMENT")
+                }
                 progressValue = value;
-                console.log(progressValue);
                 update();
+                if (stateTracker){
+                    console.log("STATE: IDLE")
+                }
             },
 
             /**
@@ -698,6 +705,10 @@ var MyToolkit = (function() {
                 progressValue += value;
                 if (progressValue > 100){
                     progressValue = 97.5;
+                }
+                update();
+                if (stateTracker){
+                    console.log("STATE: IDLE")
                 }
             },
 
@@ -719,6 +730,13 @@ var MyToolkit = (function() {
                 bar.attr({width: newWidth});
                 progress.attr({width: newWidth*(progressValue/100)});
                 width = newWidth;
+            },
+            /**
+             * Monitors state changes
+             * @method
+            */
+             monitor: function(){
+                stateTracker = !stateTracker;
             }
         }
     }

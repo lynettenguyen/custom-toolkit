@@ -56,6 +56,7 @@ scrollbar.onclick(function(e){
 scrollbar.monitor();
 
 var progressBar = new MyToolkit.ProgressBar(100);
+progressBar.monitor();
 progressBar.changeWidth(200);
 progressBar.move(300, 140);
 progressBar.setValue(50);
